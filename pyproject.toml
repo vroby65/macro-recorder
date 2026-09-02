@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "macro-recorder"
+version = "0.1.0"
+description = "Small looping mouse and keyboard recorder for Linux"
+requires-python = ">=3.10"
+dependencies = ["evdev>=1.7", "pynput>=1.7"]
+
+[project.scripts]
+macro-recorder = "macro_recorder.app:main"
+
+[tool.setuptools]
+packages = ["macro_recorder"]
