@@ -1,58 +1,56 @@
 # Macro Recorder
 
-Piccola finestra Linux con tre pulsanti:
+A small Linux window with three buttons:
 
-- `● REC` cancella la macro precedente e avvia subito la registrazione;
-- `▶ PLAY` riproduce la macro in loop; dopo 5 secondi, qualsiasi movimento,
-  click o tocco fisico del puntatore interrompe la riproduzione;
-- `■ STOP` ferma registrazione o riproduzione.
+- `● REC` clears the previous macro and starts recording immediately;
+- `▶ PLAY` replays the macro in a loop; after 5 seconds, any pointer movement,
+  click, or physical touch stops playback;
+- `■ STOP` stops recording or playback.
 
-Le posizioni del mouse sono registrate come coordinate assolute e vengono
-riprodotte nello stesso punto indipendentemente dalla posizione iniziale del
-cursore. Tastiera e monitor di arresto usano `evdev`. La tastiera viene
-riprodotta tramite `uinput`; posizione, click e rotella condividono il
-controller Xorg di `pynput`.
+Mouse positions are recorded as absolute coordinates and replayed at the same
+point regardless of the cursor's starting position. Keyboard and stop
+monitoring use `evdev`. The keyboard is replayed through `uinput`; position,
+clicks, and scrolling share `pynput`'s Xorg controller.
 
-La cattura e il posizionamento globale assoluto usano il backend Xorg di
-`pynput`. Su Wayland puro l'accesso globale al puntatore è intenzionalmente
-limitato: tramite XWayland può funzionare solo parzialmente e dipende dal
-compositor.
+Capture and absolute global positioning use `pynput`'s Xorg backend. On pure
+Wayland, global pointer access is intentionally limited: through XWayland it
+may work only partially and depends on the compositor.
 
-## Installazione
+## Installation
 
-Su Linux Mint, Ubuntu o Debian:
+On Linux Mint, Ubuntu, or Debian:
 
 ```bash
 sudo apt install python3-evdev python3-pynput python3-tk
 ```
 
-In alternativa, usando un ambiente virtuale:
+Alternatively, using a virtual environment:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e .
 ```
 
-Avvio diretto dalla cartella del progetto:
+Direct launch from the project folder:
 
 ```bash
 python3 -m macro_recorder
 ./macro-recorder
 ```
 
-Dopo l'installazione con `pip` è disponibile anche il comando:
+After installing with `pip`, the command is also available as:
 
 ```bash
 macro-recorder
 ```
 
-## Permessi Linux
+## Linux permissions
 
-L'applicazione deve poter leggere `/dev/input/event*` e scrivere su
-`/dev/uinput`. Prima prova ad avviarla normalmente: alcune distribuzioni
-assegnano già gli ACL necessari all'utente della sessione.
+The application must be able to read `/dev/input/event*` and write to
+`/dev/uinput`. First try launching it normally: some distributions already
+assign the necessary ACLs to the session user.
 
-Se manca l'accesso, su distribuzioni che usano il gruppo `input`:
+If access is missing, on distributions that use the `input` group:
 
 ```bash
 sudo usermod -aG input "$USER"
@@ -61,21 +59,21 @@ sudo udevadm control --reload-rules
 sudo udevadm trigger --name-match=uinput
 ```
 
-Poi termina e riapri la sessione. Non avviare l'interfaccia con `sudo`.
-L'appartenenza al gruppo `input` permette di leggere tutti gli input della
-sessione, incluse le password: concedila soltanto a utenti e programmi fidati.
+Then log out and back in. Do not run the interface with `sudo`. Membership in
+the `input` group allows reading all session inputs, including passwords:
+grant it only to trusted users and programs.
 
-## Limiti intenzionali
+## Intentional limitations
 
-- La registrazione assoluta del puntatore richiede una sessione Xorg; Wayland
-  puro non è supportato in modo completo.
-- La macro rimane in memoria e viene persa chiudendo l'applicazione.
-- Cambiare risoluzione o disposizione dei monitor dopo la registrazione può
-  spostare le coordinate attese.
-- Il click usato sul pulsante STOP viene rimosso automaticamente dalla fine
-  della registrazione.
+- Absolute pointer recording requires an Xorg session; pure Wayland is not
+  fully supported.
+- The macro stays in memory and is lost when closing the application.
+- Changing resolution or monitor layout after recording can shift the expected
+  coordinates.
+- The click used on the STOP button is automatically removed from the end of
+  the recording.
 
-## Verifica
+## Verification
 
 ```bash
 python3 -m unittest discover -s tests -v
